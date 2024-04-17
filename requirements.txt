@@ -21,6 +21,7 @@ selenium
 playwright
 ffmpeg-downloader
 pydub
+langchain-google-genai
 
 
 -e .

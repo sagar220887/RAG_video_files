@@ -37,6 +37,8 @@ from langchain import HuggingFaceHub
 from transformers import  AutoTokenizer
 from ctransformers import AutoModelForCausalLM
 
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 load_dotenv()
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -162,51 +164,62 @@ def create_chain(llm, vector_store, prompt):
 
 def llm_model():
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel(model_name = "gemini-pro")
+    model = ChatGoogleGenerativeAI(model="gemini-pro",google_api_key=GOOGLE_API_KEY,
+                             temperature=0.2,convert_system_message_to_human=True)
     return model
 
-def get_response(model, user_query):
-    response = model.generate_content(user_query)
-    result = response.text
+def get_response(chain):
+    # response = model.generate_content(user_query)
+    # result = response.text
+    # print('result - ', result)
+    # return result
+    result = chain({'query':'tell me a summary of the file context'}, return_only_outputs=True)
     print('result - ', result)
-    return result
+    ans = result['result']
+    print(f"Answer:{ans}")
+    return ans
 
 
 def main():
-    # converted video to audio file format
-    # python voice_recorder.py 
+
+    '''
+    converted video to audio file format - 
+    1. recording the video file and converting to audio wave file
+    2. The large audio wave file is converted into small chunks of audio wave files
+    3. The below script is executed and the video is played
+    4. when the user wants to stop as per keyboard interuption - the file is saved as audio wave file
+    5. The audio wave file is converted into many chunks of the same audio wave
+    6. The files are saved under the directory - chunked which is input to below code
+
+    script : src/python voice_recorder.py
+
+    '''
+    
 
     audio_text_file = get_text_from_multiple_audio_files()
     print('audio_text_file ==> ', audio_text_file)
 
-    # documents = get_documnets_from_text_file(audio_text_file)
+    documents = get_documnets_from_text_file(audio_text_file)
 
-    # # #Split Text into Chunks
-    # data_chunks = get_data_chunks(documents)
+    # #Split Text into Chunks
+    data_chunks = get_data_chunks(documents)
 
-    # # #Load the Embedding Model
-    # embeddings = create_embeddings()
+    # #Load the Embedding Model
+    embeddings = create_embeddings()
 
-    # # #Convert the Text Chunks into Embeddings and Create a FAISS Vector Store
-    # vector_db=store_data_in_vectordb(data_chunks, embeddings)
+    # #Convert the Text Chunks into Embeddings and Create a FAISS Vector Store
+    vector_db=store_data_in_vectordb(data_chunks, embeddings)
     
-    # llm = llm_model()
+    llm = llm_model()
 
-    # qa_prompt = get_prompt()
+    qa_prompt = get_prompt()
 
-    # get_response(llm, qa_prompt)
+    chain = create_chain(llm, vector_db, qa_prompt)
 
+    get_response(qa_prompt)
 
-
-
-
-    # chain = create_chain(llm, vector_db, qa_prompt)
-
-    # result = chain({'query':'tell me a summary of the file context'}, return_only_outputs=True)
-    # print('result - ', result)
-    # ans = result['result']
-    # print(f"Answer:{ans}")
-    # return ans
+    
 
 
 
