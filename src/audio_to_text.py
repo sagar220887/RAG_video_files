@@ -47,8 +47,27 @@ def get_text_from_multiple_audio_files():
             audio_text = get_voice_data_from_audio_file(os.path.join(folder_path, each_file))
             audio_text_array.append(audio_text)
 
-    return " ".join(audio_text_array)
+    # Saving the audio file contents into a text file
+    merged_text = " ".join(audio_text_array)
+    save_audio_to_text_file(merged_text)
+    return read_audio_text_file()
 
+
+def save_audio_to_text_file(content):
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    audio_path = os.path.join(ROOT_DIR,'audio.txt')
+    audio_text_file = open(audio_path,"w+")
+    audio_text_file.write(content)
+    audio_text_file.close()
+
+def read_audio_text_file():
+    # Read the audio text file
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    audio_path = os.path.join(ROOT_DIR,'audio.txt')
+    file1 = open(audio_path, "r+")
+    file_content = file1.read()
+    file1.close()
+    return file_content
 
 
 def text_to_speech(text):

@@ -4,7 +4,8 @@ To design a RAG system using a video file using gemini-pro
 ![screenshot](RAG_audioFile.png)
 
 
-###
+### Steps for converting a video file to audio file
+
     converted video to audio file format - 
     1. recording the video file and converting to audio wave file
     2. The large audio wave file is converted into small chunks of audio wave files
