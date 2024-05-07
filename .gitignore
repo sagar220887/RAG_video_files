@@ -163,3 +163,5 @@ cython_debug/
 *.wav
 chunked/
 model/
+*.mp3
+*.wav
